@@ -25,8 +25,10 @@ import {
 } from 'react-bootstrap';
 import DatePicker from 'react-bootstrap-date-picker';
 
-var clientId = 'mqtt_' + (1+Math.random()*4294967295).toString(16);
+var clientId = 'mqtt_' + (1 + Math.random() * 4294967295).toString(16);
 
+import uuid from 'node-uuid';
+import { assign, omit } from 'lodash';
 import mqtt from 'mqtt/lib/connect';
 
 class App extends Component {
@@ -34,87 +36,100 @@ class App extends Component {
     super(props);
 
     this.state = { 
+      _id: null,
       numero: '216558',
       pedido: '74655',
       emissao: new Date().toISOString(),
       entrega: new Date().toISOString(),
-      cpnj: '63.394.915/0001-62',
+      cnpj: '63.394.915/0001-62',
       representante: '001',
       nome: 'ALEGRIA NA VIDA AGROINDUSTRIAL LTDA',
       parcelas: [
         {
           selecionada: false,
-          data: new Date('2016-10-10').toISOString(),
+          vencto: new Date('2016-10-10').toISOString(),
           valor: 2198.74
         },
         {
           selecionada: false,
-          data: new Date('2016-11-07').toISOString(),
+          vencto: new Date('2016-11-07').toISOString(),
           valor: 3572.96
         }        
       ],
-      messages: []
+      topics: {}
     }
 
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
 
+    this.handleInsert = this.handleInsert.bind(this);
+    this.handleSave = this.handleSave.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handlePrint = this.handlePrint.bind(this);
+    this.handleCalc = this.handleCalc.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+
+    this.handleError = this.handleError.bind(this);
+    this.handleSaveOk = this.handleSaveOk.bind(this);
+
   }
 
   componentWillMount() {
     var opts = {
-      host: 'ws://192.168.0.1', //'test.mosquitto.org'
+      host: '192.168.0.1', //'test.mosquitto.org'
       port: 61614,
       protocol: 'ws',
       qos: 0,
       retain: false,
       clean: true,
       keepAlive: 30, // 30 sec.
-      clientId: 'mqtt_' + (1+Math.random()*4294967295).toString(16)
+      clientId: clientId
     }
 
-    var host = 'ws://192.168.0.1:61614';
-    this.client = mqtt.connect(host, {clientId: 'mqtt_' + (1+Math.random()*4294967295).toString(16)});
+    this.client = mqtt.connect(opts);
 
     this.client.on('connect', function() {
-      this.client.subscribe("duplicata/inserir");
-      this.client.subscribe("duplicata/gravar");
-      this.client.subscribe("duplicata/excluir");
-      this.client.subscribe("duplicata/imprimir");
-      this.client.subscribe("duplicata/listar");
-      this.client.subscribe("duplicata/busca");
-      this.client.subscribe("duplicata/calcular");
-    }.bind(this));
+      let topics = {};
 
+      this.client.subscribe(
+        'financeiro/duplicata/erros/' + clientId, 
+        function(err, granted) { 
+          !err ? 
+            this.setState({
+              topics: assign(this.state.topics, {[granted[0].topic]: this.handleError})}) : 
+            console.log('Erro ao se inscrever no topico: ' + err)
+        }.bind(this)
+      );
+
+      //this.client.subscribe('financeiro/duplicata/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/duplicata/gravar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/duplicata/excluir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/duplicata/imprimir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/duplicata/listar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/duplicata/buscar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+      //this.client.subscribe('financeiro/duplicata/calcular', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
+
+    }.bind(this));
     
     this.client.on('message', function (topic, message) {
       // message is Buffer
       console.log(message.toString())
-      //this.client.end()
+      
+      this.state.topics[topic] && this.state.topics[topic](message.toString());
+
     }.bind(this))
 
-
-    /*
-    // this is an "echo" websocket service for testing pusposes
-    this.connection = new WebSocket('wss://echo.websocket.org');
-    // listen to onmessage event
-    this.connection.onmessage = evt => { 
-      // add the new message to state
-        this.setState({
-        messages : this.state.messages.concat([ evt.data ])
-      })
-    };
-
-    // for testing: sending a message to the echo service every 2 seconds, 
-    // the service sends it right back
-    setInterval( _ =>{
-      this.connection.send( Math.random() )
-    }, 2000 )
-    */
   }
 
   componentWillUnmount() {
-      this.client.end();
+    this.state.topics.forEach( (t) =>
+      this.client.unsubscribe(t.topic, function(err) { err && console.log('Erro ao retirar a inscrição ao topico: ' + t.topic)})
+    )
+    this.client.end();
+  }
+
+  handleError(msg) {
+    alert('Erro: ' + msg);
   }
 
   handleClick() {
@@ -127,10 +142,63 @@ class App extends Component {
     }, 2000);
   }
 
+  handleInsert() {
+    this.setState({
+      _id: uuid.v4(), 
+      numero: '',
+      pedido: '',
+      emissao: new Date().toISOString(),
+      entrega: new Date().toISOString(),
+      cnpj: '',
+      representante: '',
+      nome: '',
+      parcelas: []
+    });
+  }
+
+  handleSave(data) {
+    //alert(JSON.stringify(this.state, null, 2));
+    this.client.subscribe('financeiro/duplicata/alterado/' + this.state._id, function(err, granted) {
+      if (err) {
+        console.log('Erro ao se inscrever no topico: ' + granted[0].topic)
+      } else {
+        this.setState(
+          {topics: assign(this.state.topics, {[granted[0].topic]: this.handleSaveOk})},
+          this.client.publish.bind(
+            this.client, 
+            'financeiro/duplicata/alterar/' + clientId, 
+            JSON.stringify(omit(this.state, 'topics'))
+          )  
+        );
+      }
+      
+    }.bind(this));    
+  }
+
+  handleSaveOk(msg) {
+    alert('Salvo com sucesso: ' + msg);
+  }
+
+  handleDelete(id) {
+
+  }
+
+  handlePrint(data) {
+
+  }
+
+  handleCalc(data) {
+
+  }
+
+  handleSearch(data) {
+
+  }
+
   handleChange(value) {
     // value is an ISO String. 
     this.setState({
-      value: value
+      [value.target.id]: value.target.value
     });
   }
 
@@ -142,6 +210,8 @@ class App extends Component {
         
           <Col md={1} />
           <Col md={10} >
+
+            <h4>ClientId: {clientId}</h4>
 
             <Panel header={'Cadastro de Duplicadas'} bsStyle="primary" >
 
@@ -155,8 +225,7 @@ class App extends Component {
                     >
                         <Button
                           bsSize="large"
-                          disabled={!canSave}
-                          onClick={!canSave ? this.handleClick : null}
+                          onClick={this.handleInsert}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="plus" />
@@ -174,8 +243,7 @@ class App extends Component {
 
                         <Button
                           bsSize="large"
-                          disabled={!canSave}
-                          onClick={!canSave ? this.handleClick : null}
+                          onClick={this.handleSave}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="floppy-disk" />
@@ -194,8 +262,8 @@ class App extends Component {
 
                         <Button
                           bsSize="large"
-                          disabled={!canSave}
-                          onClick={!canSave ? this.handleClick : null}
+                          disabled={!this.state.id}
+                          onClick={this.handlePrint}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="print" />
@@ -214,7 +282,7 @@ class App extends Component {
 
                         <Button
                           bsSize="large"
-                          onClick={!canSave ? this.handleClick : null}
+                          onClick={this.handleCalc}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="calendar" />
@@ -233,7 +301,7 @@ class App extends Component {
 
                         <Button
                           bsSize="large"
-                          onClick={!canSave ? this.handleClick : null}
+                          onClick={this.handleSearch}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="search" />
@@ -251,7 +319,8 @@ class App extends Component {
                     >
                         <Button
                           bsSize="large"
-                          onClick={!canSave ? this.handleClick : null}
+                          disabled={!this.state.id}
+                          onClick={this.handleDelete}
                           style={{width: 100}}
                         >
                           <Glyphicon glyph="trash" />
@@ -266,28 +335,28 @@ class App extends Component {
                 <Row style={{paddingTop: 20}} >
                   <Col xs={12} md={2}>Número</Col>
                   <Col xs={12} md={2}>
-                    <FormGroup controlId="formValidationSuccess2" validationState="success">
+                    <FormGroup controlId="numero" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" defaultValue="216558" />
+                      <FormControl ref="numero" type="text" value={this.state.numero} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
                   <Col xs={12} md={2}>Emissão</Col>
                   <Col xs={12} md={2}>
-                    <FormGroup controlId="formValidationSuccess2" validationState="success">
+                    <FormGroup controlId="emissao" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
                       {/*<FormControl.Feedback />*/}
-                      <DatePicker value={this.state.value} onChange={this.handleChange} />
+                      <DatePicker ref="emissao" value={this.state.emissao} onChange={this.handleChange} />
                     </FormGroup>
                   </Col>
                   <Col xs={12} md={2}>Entrega</Col>
                   <Col xs={12} md={2}>
-                    <FormGroup controlId="formValidationSuccess2" validationState="success">
+                    <FormGroup controlId="entrega" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
                       {/*<FormControl.Feedback />*/}
-                      <DatePicker value={this.state.value} onChange={this.handleChange} />
+                      <DatePicker ref="entrega" value={this.state.entrega} onChange={this.handleChange} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -295,25 +364,25 @@ class App extends Component {
                 <Row>
                   <Col xs={12} md={2}>Pedido</Col>
                   <Col xs={12} md={2}>
-                    <FormGroup controlId="formValidationSuccess2" validationState="success">
+                    <FormGroup controlId="pedido" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" defaultValue="74655" />
+                      <FormControl type="text" ref="pedido" value={this.state.pedido} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
                   <Col xs={12} md={1}>CNPJ/CPF</Col>
                   <Col xs={12} md={3}>
-                    <FormGroup controlId="formValidationSuccess2" validationState="success">
+                    <FormGroup controlId="cnpj" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" defaultValue="63.394.915/0001-62" />
+                      <FormControl type="text" ref="cnpj" value={this.state.cnpj} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
                   <Col xs={12} md={2}>Representante</Col>
                   <Col xs={12} md={2}>
-                    <FormGroup controlId="formValidationSuccess2" validationState="success">
+                    <FormGroup controlId="representante" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" defaultValue="001" />
+                      <FormControl type="text" ref="representante" value={this.state.representante} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
@@ -322,9 +391,9 @@ class App extends Component {
                 <Row>
                   <Col xs={12} md={2}>Razão Social</Col>
                   <Col xs={12} md={10}>
-                    <FormGroup controlId="formValidationSuccess2" validationState="success">
+                    <FormGroup controlId="nome" validationState="success">
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
-                      <FormControl type="text" defaultValue="ALEGRIA NA VIDA AGROINDUSTRIAL LTDA" />
+                      <FormControl type="text" ref="nome" value={this.state.nome} onChange={this.handleChange} />
                       <FormControl.Feedback />
                     </FormGroup>
                   </Col>
@@ -341,16 +410,14 @@ class App extends Component {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td><Checkbox defaultValue={true} /></td>
-                          <td>10/10/2016</td>
-                          <td>2.198,74</td>
-                        </tr>
-                        <tr>
-                          <td><Checkbox defaultValue={true} /></td>
-                          <td>07/11/2016</td>
-                          <td>3.572,96</td>
-                        </tr>
+                        {this.state.parcelas.map( (k, i) => 
+                          <tr key={'tr-' + i} >
+                            <td><Checkbox value={k.selecionada} /></td>
+                            <td>{k.vencto}</td>
+                            <td>{k.valor}</td>
+                          </tr>
+                        )}
+ 
                         <tr>
                           <td></td>
                           <td colSpan="2">Total das Parcelas: R$ 3.572,96</td>
