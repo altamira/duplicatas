@@ -10,13 +10,12 @@ Below you will find some information on how to perform common tasks.
 
 ## Table of Components
 
-- [Folder Structure3](#folder-structure3)
+- [Duplicatas](#folder-structure3)
 - [Folder Structure2](#folder-structure2)
 - [Folder Structure](#folder-structure)
 
-## Folder Structure3
+## Duplicatas
 ##Duplicatas
-====
 
 ##Duplicates preview page
 ![alt tag](https://github.com/altamira/duplicatas/blob/master/images/duplicatas.png)
