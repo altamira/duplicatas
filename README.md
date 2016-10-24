@@ -8,7 +8,7 @@ This project is an React page that accesses a "MQTT" server, that accesses the "
 
 Below you will find some information on how to perform common tasks.
 
-## Table of Components
+## Table of UI Components
 
 - [Duplicatas](#duplicatas)
 - [Node-red](#node-red)
@@ -77,6 +77,7 @@ duplicatas/
     All images files...
 ```
 
+----
 
 ----
 
