@@ -11,7 +11,7 @@ Below you will find some information on how to perform common tasks.
 ## Table of Components
 
 - [Duplicatas](#duplicatas)
-- [Duplicatas2](#Duplicatas2)
+- [Duplicatas2](#duplicatas2)
 - [Folder Structure](#folder-structure)
 
 ## Duplicatas
