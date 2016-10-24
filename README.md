@@ -1,7 +1,7 @@
-This project is an React page that accesses a "MQTT" server, that accesses the "Node-red". The Node-Red in turn accesses a MongoDB database which stores the duplicates records.
-
 #Structure of Project
 ![alt tag](https://github.com/altamira/duplicatas/blob/master/images/estrutura.png)
+
+This project is an React page that accesses a "MQTT" server, that accesses the "Node-red". The Node-Red in turn accesses a MongoDB database which stores the duplicates records.
 
 #Structure of Topics and names
 ![alt tag](https://github.com/altamira/duplicatas/blob/master/images/create topics.png)
@@ -10,16 +10,11 @@ Below you will find some information on how to perform common tasks.
 
 ## Table of Components
 
-- [Duplicatas](#Duplicates preview page)
-- [NODE-RED](#Installation NODE-RED)
+- [Folder Structure3](#folder-structure3)
+- [Folder Structure2](#folder-structure2)
 - [Folder Structure](#folder-structure)
 
-## Table of Contents
-
-- [Updating to New Releases](#updating-to-new-releases)
-- [Sending Feedback](#sending-feedback)
-- [Folder Structure](#folder-structure)
-
+## Folder Structure3
 ##Duplicatas
 ====
 
@@ -27,7 +22,7 @@ Below you will find some information on how to perform common tasks.
 ![alt tag](https://github.com/altamira/duplicatas/blob/master/images/duplicatas.png)
 
 ---
-
+## Folder Structure2
 ##Installation NODE-RED
 
 Run the following command in the root directory of your Node-RED install
