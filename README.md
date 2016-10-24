@@ -3,7 +3,7 @@
 
 This project is an React page that accesses a "MQTT" server, that accesses the "Node-red". The Node-Red in turn accesses a MongoDB database which stores the duplicates records.
 
-#Structure of Topics and names
+#MQTT structure of Topics names
 ![alt tag](https://github.com/altamira/duplicatas/blob/master/images/create topics.png)
 
 Below you will find some information on how to perform common tasks.
