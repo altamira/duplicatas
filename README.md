@@ -35,7 +35,7 @@ Run the following command in root mode. Of the libraries installation.
 
 Run the command prompt **"node-red"**
 
-Open **"http://localhost:1880/#"**
+Open <http://localhost:1880>
 
 To restore a node-red flow with Ctrl-I command or the menu, "Menu > Import > Clipboard".
 
