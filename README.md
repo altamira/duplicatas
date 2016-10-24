@@ -11,7 +11,8 @@ Below you will find some information on how to perform common tasks.
 ## Table of Components
 
 - [Duplicatas](#Duplicates preview page)
-- [NODE-RED](##-Installation NODE-RED)
+- [NODE-RED](#Installation NODE-RED)
+- [Folder Structure](#folder-structure)
 
 ## Table of Contents
 
@@ -27,7 +28,7 @@ Below you will find some information on how to perform common tasks.
 
 ---
 
-##-Installation NODE-RED
+#Installation NODE-RED
 
 Run the following command in the root directory of your Node-RED install
 
@@ -57,6 +58,30 @@ Select all **"Ctrl-a"** --> Copy **"Ctrl-c"** --> Past **"Ctrl-v"** all JSON con
 Click "OK" and position the flow where to find, the better.
 
 Check out http://nodered.org/docs/getting-started/ for full instructions on getting started.
+
+## Folder Structure
+
+After creation, your project should look like this:
+
+```
+duplicatas/
+  README.md
+  node_modules/
+  package.json
+  public/
+    boostrap.min
+    index.html
+    favicon.ico
+  src/
+    App.css
+    App.js
+    App.test.js
+    index.css
+    index.js
+    logo.svg
+  images/
+    images files
+```
 
 ----
 
@@ -130,7 +155,7 @@ We commit to keeping the breaking changes minimal so you can upgrade `react-scri
 
 We are always open to [your feedback](https://github.com/facebookincubator/create-react-app/issues).
 
-## Folder duplicadas Structure
+## Folder Structure
 
 After creation, your project should look like this:
 
