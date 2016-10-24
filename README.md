@@ -1,10 +1,31 @@
-Duplicatas
-========================
+This project is an React page that accesses a "MQTT" server, that accesses the "Node-red". The Node-Red in turn accesses a MongoDB database which stores the duplicates records.
 
-This project is an React page that accesses a "MQTT" server, that accesses the "Node-red". The Node-Red in turn accesses a MongoDB database which stores the duplicates records. 
+#Structure of Project
+![alt tag](https://github.com/altamira/duplicatas/blob/master/images/estrutura.png)
+
+#Structure of Topics and names
+![alt tag](https://github.com/altamira/duplicatas/blob/master/images/create topics.png)
+
+Below you will find some information on how to perform common tasks.
+
+## Table of Components
+
+- [Duplicatas](#Duplicates preview page)
+- [NODE-RED](##-Installation NODE-RED)
+
+## Table of Contents
+
+- [Updating to New Releases](#updating-to-new-releases)
+- [Sending Feedback](#sending-feedback)
+- [Folder Structure](#folder-structure)
+
+##Duplicatas
+====
 
 #Duplicates preview page
 ![alt tag](https://github.com/altamira/duplicatas/blob/master/images/duplicatas.png)
+
+---
 
 ##-Installation NODE-RED
 
@@ -21,7 +42,7 @@ Run the following command in root mode. Of the libraries installation.
 
 Run the command prompt **"node-red"**
 
-For test open a browser **FireFox** or **Chrome** e connect to port 1880 **"http://127.0.0.1:1880/#"**
+Open **"http://localhost:1880/#"**
 
 To restore a node-red flow with Ctrl-I command or the menu, "Menu > Import > Clipboard".
 
@@ -35,11 +56,9 @@ Select all **"Ctrl-a"** --> Copy **"Ctrl-c"** --> Past **"Ctrl-v"** all JSON con
 
 Click "OK" and position the flow where to find, the better.
 
-#Structure of Project
-![alt tag](https://github.com/altamira/duplicatas/blob/master/images/estrutura.png)
+Check out http://nodered.org/docs/getting-started/ for full instructions on getting started.
 
-#Structure of Topics and names
-![alt tag](https://github.com/altamira/duplicatas/blob/master/images/create topics.png)
+----
 
 Below you will find some information on how to perform common tasks.
 
