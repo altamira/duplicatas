@@ -11,7 +11,7 @@ Below you will find some information on how to perform common tasks.
 ## Table of Components
 
 - [Duplicatas](#duplicatas)
-- [Installation NODE-RED](#installation NODE-RED)
+- [NODE-RED](#NODE-RED)
 - [Folder Structure](#folder-structure)
 
 ## Duplicatas
@@ -20,7 +20,7 @@ Below you will find some information on how to perform common tasks.
 ![alt tag](https://github.com/altamira/duplicatas/blob/master/images/duplicatas.png)
 
 ---
-## Installation NODE-RED
+## NODE-RED
 
 Run the following command in the root directory of your Node-RED install
 
