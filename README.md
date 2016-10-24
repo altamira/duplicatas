@@ -74,7 +74,7 @@ duplicatas/
     index.js
     logo.svg
   images/
-    images files
+    All images files...
 ```
 
 
