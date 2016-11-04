@@ -1,7 +1,87 @@
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+#Structure of Project
+![alt tag](https://github.com/altamira/duplicatas/blob/master/images/estrutura.png)
 
-Below you will find some information on how to perform common tasks.  
-You can find the most recent version of this guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
+This project is an React page that accesses a "MQTT" server, that accesses the "Node-red". The Node-Red in turn accesses a MongoDB database which stores the duplicates records.
+
+#MQTT structure of Topics names
+![alt tag](https://github.com/altamira/duplicatas/blob/master/images/create topics.png)
+
+Below you will find some information on how to perform common tasks.
+
+## Table of UI Components
+
+- [Duplicatas](#duplicatas)
+- [Node-red](#node-red)
+- [Folder Structure](#folder-structure)
+
+## Duplicatas
+
+##Component preview page
+![alt tag](https://github.com/altamira/duplicatas/blob/master/images/duplicatas.png)
+
+---
+## Node-red
+
+Run the following command in the root directory of your Node-RED install
+
+    npm install -g node-red
+    npm install -g bcryptjs
+
+Wait finish installation...
+
+Run the following command in root mode. Of the libraries installation.
+
+    c:\Program Files\nodejs\npm install -g node-red-node-mongodb
+
+Run the command prompt **"node-red"**
+
+Open <http://localhost:1880>
+
+To restore a node-red flow with Ctrl-I command or the menu, "Menu > Import > Clipboard".
+
+Below you will find node-red project.
+
+###Duplicatas Node-red Flow
+ ```sh
+[{"id":"b01357d9.8e32f8","type":"mqtt in","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/alterar/#","qos":"0","broker":"673dc57b.0c3b2c","x":700,"y":1000,"wires":[["da3a4ae8.ed2278"]]},{"id":"ff7ece03.861f6","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"payload","x":1150,"y":1040,"wires":[]},{"id":"f35260a9.3b4e6","type":"mqtt in","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/inserir","qos":"0","broker":"673dc57b.0c3b2c","x":710,"y":1160,"wires":[["f489ca14.807a78"]]},{"id":"46da0969.7c1b78","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"payload","x":1130,"y":1160,"wires":[]},{"id":"6cba88bf.428848","type":"mqtt in","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/excluir","qos":"0","broker":"673dc57b.0c3b2c","x":710,"y":1260,"wires":[["b482c984.a7a4c8"]]},{"id":"7682c3b3.c1fe1c","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"payload","x":1130,"y":1260,"wires":[]},{"id":"f82c0e0d.e9358","type":"mqtt in","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/imprimir","qos":"0","broker":"673dc57b.0c3b2c","x":720,"y":1360,"wires":[["c05a1ab.96bf3e8"]]},{"id":"d72d9964.6e5908","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"payload","x":1130,"y":1360,"wires":[]},{"id":"e0a073b2.98fca","type":"mqtt in","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/listar","qos":"0","broker":"673dc57b.0c3b2c","x":710,"y":1460,"wires":[["2e907298.e15b1e"]]},{"id":"25de084d.06cf28","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"payload","x":1130,"y":1460,"wires":[]},{"id":"8b7d8878.881248","type":"mqtt in","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/busca","qos":"0","broker":"673dc57b.0c3b2c","x":710,"y":1560,"wires":[["dc3d9e14.d5ac5"]]},{"id":"7bf2762d.0f98a8","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"payload","x":1130,"y":1560,"wires":[]},{"id":"2609576c.c9bb18","type":"mqtt in","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/calcular","qos":"0","broker":"673dc57b.0c3b2c","x":720,"y":1660,"wires":[["f950d58b.6acce8"]]},{"id":"a15903ed.f926d","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"payload","x":1130,"y":1660,"wires":[]},{"id":"437e2893.bde318","type":"inject","z":"10900aeb.adaf25","name":"","topic":"","payload":"{ \"_id\": \"asdfsd45sdfs09ssdfsdfs\" }","payloadType":"json","repeat":"","crontab":"","once":false,"x":90,"y":1000,"wires":[["83815d4d.264c1"]]},{"id":"83815d4d.264c1","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/gravar/mg09xe054","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":340,"y":1000,"wires":[]},{"id":"11bec429.b3b43c","type":"inject","z":"10900aeb.adaf25","name":"","topic":"","payload":"inserir","payloadType":"str","repeat":"","crontab":"","once":false,"x":110,"y":1160,"wires":[["325b9e0e.fb0d32"]]},{"id":"325b9e0e.fb0d32","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/inserir","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":380,"y":1160,"wires":[]},{"id":"16de55f5.7729ea","type":"inject","z":"10900aeb.adaf25","name":"","topic":"","payload":"excluir","payloadType":"str","repeat":"","crontab":"","once":false,"x":110,"y":1260,"wires":[["4b2a3f12.29c4"]]},{"id":"4b2a3f12.29c4","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/excluir","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":380,"y":1260,"wires":[]},{"id":"a4f190e5.7a346","type":"inject","z":"10900aeb.adaf25","name":"","topic":"","payload":"imprimir","payloadType":"str","repeat":"","crontab":"","once":false,"x":120,"y":1360,"wires":[["feab4145.229df"]]},{"id":"feab4145.229df","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/imprimir","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":380,"y":1360,"wires":[]},{"id":"7081c732.841638","type":"inject","z":"10900aeb.adaf25","name":"","topic":"","payload":"listar","payloadType":"str","repeat":"","crontab":"","once":false,"x":110,"y":1460,"wires":[["2c29164c.b68a5a"]]},{"id":"2c29164c.b68a5a","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/listar","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":370,"y":1460,"wires":[]},{"id":"5b77cb36.b9cc04","type":"inject","z":"10900aeb.adaf25","name":"","topic":"","payload":"busca","payloadType":"str","repeat":"","crontab":"","once":false,"x":110,"y":1560,"wires":[["f9617e5c.307a4"]]},{"id":"f9617e5c.307a4","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/busca","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":380,"y":1560,"wires":[]},{"id":"f94bb145.4d3a8","type":"inject","z":"10900aeb.adaf25","name":"","topic":"","payload":"calcular","payloadType":"str","repeat":"","crontab":"","once":false,"x":110,"y":1660,"wires":[["fafd3c0b.1b661"]]},{"id":"fafd3c0b.1b661","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"financeiro/duplicata/calcular","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":380,"y":1660,"wires":[]},{"id":"f489ca14.807a78","type":"json","z":"10900aeb.adaf25","name":"","x":930,"y":1160,"wires":[["46da0969.7c1b78","9a8bb18.44c755"]]},{"id":"b482c984.a7a4c8","type":"json","z":"10900aeb.adaf25","name":"","x":930,"y":1260,"wires":[["7682c3b3.c1fe1c"]]},{"id":"c05a1ab.96bf3e8","type":"json","z":"10900aeb.adaf25","name":"","x":930,"y":1360,"wires":[["d72d9964.6e5908"]]},{"id":"2e907298.e15b1e","type":"json","z":"10900aeb.adaf25","name":"","x":930,"y":1460,"wires":[["25de084d.06cf28"]]},{"id":"f950d58b.6acce8","type":"json","z":"10900aeb.adaf25","name":"","x":930,"y":1660,"wires":[["a15903ed.f926d"]]},{"id":"dc3d9e14.d5ac5","type":"json","z":"10900aeb.adaf25","name":"","x":930,"y":1560,"wires":[["7bf2762d.0f98a8"]]},{"id":"57fb9f6a.a6b9b","type":"mongodb out","z":"10900aeb.adaf25","service":"_ext_","mongodb":"258dcda0.cc5e32","name":"","collection":"duplicatas","payonly":true,"upsert":false,"multi":false,"operation":"store","x":1220,"y":1000,"wires":[]},{"id":"9a8bb18.44c755","type":"mongodb out","z":"10900aeb.adaf25","service":"_ext_","mongodb":"258dcda0.cc5e32","name":"","collection":"duplicatas","payonly":true,"upsert":false,"multi":false,"operation":"store","x":1200,"y":1200,"wires":[]},{"id":"a578af9f.e7b65","type":"function","z":"10900aeb.adaf25","name":"","func":"return [\n    {\n        id: msg.id,\n        topic: 'financeiro/duplicata/alterado/' + msg.payload._id,\n        payload: msg.payload\n    }, \n    {\n        id: msg.id,\n        topic: 'financeiro/duplicata/erros/' + msg.topic.split('/')[msg.topic.split('/').length - 1],\n        payload: msg.payload\n    }\n];","outputs":"2","noerr":0,"x":1130,"y":1080,"wires":[["50d0ea81.613f24","a42cd5d0.603078"],["d60d6d03.50c37","30b5f3f0.993a9c"]]},{"id":"50d0ea81.613f24","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":1390,"y":1060,"wires":[]},{"id":"a42cd5d0.603078","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"true","x":1390,"y":1020,"wires":[]},{"id":"da3a4ae8.ed2278","type":"json","z":"10900aeb.adaf25","name":"","x":950,"y":1000,"wires":[["ff7ece03.861f6","57fb9f6a.a6b9b","a578af9f.e7b65"]]},{"id":"30b5f3f0.993a9c","type":"mqtt out","z":"10900aeb.adaf25","name":"","topic":"","qos":"0","retain":"false","broker":"673dc57b.0c3b2c","x":1390,"y":1160,"wires":[]},{"id":"d60d6d03.50c37","type":"debug","z":"10900aeb.adaf25","name":"","active":true,"console":"false","complete":"true","x":1390,"y":1120,"wires":[]},{"id":"673dc57b.0c3b2c","type":"mqtt-broker","z":"10900aeb.adaf25","broker":"192.168.0.1","port":"1883","clientid":"","usetls":false,"compatmode":true,"keepalive":"60","cleansession":true,"willTopic":"","willQos":"0","willPayload":"","birthTopic":"","birthQos":"0","birthPayload":""},{"id":"258dcda0.cc5e32","type":"mongodb","z":"","hostname":"127.0.0.1","port":"27017","db":"node-red","name":"mongodb"}]
+```
+Select all **"Ctrl-a"** --> Copy **"Ctrl-c"** --> Past **"Ctrl-v"** all JSON content to the box that appears empty in node-red.
+
+Click "OK" and position the flow where to find, the better.
+
+Check out http://nodered.org/docs/getting-started/ for full instructions on getting started.
+
+---
+
+## Folder Structure
+
+After creation, your project should look like this:
+
+```
+duplicatas/
+  README.md
+  node_modules/
+  package.json
+  public/
+    boostrap.min
+    index.html
+    favicon.ico
+  src/
+    App.css
+    App.js
+    App.test.js
+    index.css
+    index.js
+    logo.svg
+  images/
+    All images files...
+```
+
+----
+
+----
+
+Below you will find some information on how to perform common tasks.
 
 ## Table of Contents
 
@@ -76,11 +156,12 @@ We are always open to [your feedback](https://github.com/facebookincubator/creat
 After creation, your project should look like this:
 
 ```
-my-app/
+duplicatas/
   README.md
   node_modules/
   package.json
   public/
+    boostrap.min
     index.html
     favicon.ico
   src/
@@ -152,31 +233,6 @@ Some editors, including Sublime Text, Atom, and Visual Studio Code, provide plug
 They are not required for linting. You should see the linter output right in your terminal as well as the browser console. However, if you prefer the lint results to appear right in your editor, there are some extra steps you can do.
 
 You would need to install an ESLint plugin for your editor first.
-
->**A note for Atom `linter-eslint` users**
-
->If you are using the Atom `linter-eslint` plugin, make sure that **Use global ESLint installation** option is checked:
-
-><img src="http://i.imgur.com/yVNNHJM.png" width="300">
-
-Then add this block to the `package.json` file of your project:
-
-```js
-{
-  // ...
-  "eslintConfig": {
-    "extends": "react-app"
-  }
-}
-```
-
-Finally, you will need to install some packages *globally*:
-
-```sh
-npm install -g eslint-config-react-app@0.2.1 eslint@3.5.0 babel-eslint@6.1.2 eslint-plugin-react@6.3.0 eslint-plugin-import@1.12.0 eslint-plugin-jsx-a11y@2.2.2 eslint-plugin-flowtype@2.18.1
-```
-
-We recognize that this is suboptimal, but it is currently required due to the way we hide the ESLint dependency. The ESLint team is already [working on a solution to this](https://github.com/eslint/eslint/issues/3458) so this may become unnecessary in a couple of months.
 
 ## Installing a Dependency
 
