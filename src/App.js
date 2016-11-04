@@ -24,6 +24,11 @@ import {
   Tooltip
 } from 'react-bootstrap';
 import DatePicker from 'react-bootstrap-date-picker';
+import PDF from 'react-pdf';
+
+import Calcular from './Calcular';
+import Buscar from './Buscar';
+import Excluir from './Excluir';
 
 var clientId = 'mqtt_' + (1 + Math.random() * 4294967295).toString(16);
 
@@ -36,7 +41,7 @@ class App extends Component {
     super(props);
 
     this.state = { 
-      _id: null,
+      _id: uuid.v4(),
       numero: '216558',
       pedido: '74655',
       emissao: new Date().toISOString(),
@@ -56,11 +61,17 @@ class App extends Component {
           valor: 3572.96
         }        
       ],
-      topics: {}
+
+      // campos de controle, não armazenar
+      topics: {},
+      hasChanges: true,
+      dialog: null,
     }
 
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleEmissaoChange = this.handleEmissaoChange.bind(this);
+    this.handleEntregaChange = this.handleEntregaChange.bind(this);
 
     this.handleInsert = this.handleInsert.bind(this);
     this.handleSave = this.handleSave.bind(this);
@@ -71,6 +82,7 @@ class App extends Component {
 
     this.handleError = this.handleError.bind(this);
     this.handleSaveOk = this.handleSaveOk.bind(this);
+    this.handleCloseDialog = this.handleCloseDialog.bind(this);
 
   }
 
@@ -101,19 +113,11 @@ class App extends Component {
         }.bind(this)
       );
 
-      //this.client.subscribe('financeiro/duplicata/inserir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/gravar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/excluir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/imprimir', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/listar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/buscar', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-      //this.client.subscribe('financeiro/duplicata/calcular', function(err, granted) { !err ? topics.push(granted) : console.log('Erro ao se inscrever no topico: ' + err)});
-
     }.bind(this));
     
     this.client.on('message', function (topic, message) {
       // message is Buffer
-      console.log(message.toString())
+      console.log('\n' + topic + ':\n' + message.toString())
       
       this.state.topics[topic] && this.state.topics[topic](message.toString());
 
@@ -123,7 +127,12 @@ class App extends Component {
 
   componentWillUnmount() {
     this.state.topics.forEach( (t) =>
-      this.client.unsubscribe(t.topic, function(err) { err && console.log('Erro ao retirar a inscrição ao topico: ' + t.topic)})
+      this.client.unsubscribe(
+        t.topic, 
+        function(err) { 
+          err && console.log('Erro ao retirar a inscrição ao topico: ' + t.topic)
+        }
+      )
     )
     this.client.end();
   }
@@ -142,6 +151,10 @@ class App extends Component {
     }, 2000);
   }
 
+  handleCloseDialog() {
+    this.setState({dialog: null});
+  }
+
   handleInsert() {
     this.setState({
       _id: uuid.v4(), 
@@ -152,22 +165,27 @@ class App extends Component {
       cnpj: '',
       representante: '',
       nome: '',
-      parcelas: []
+      parcelas: [],
+
+      // campos de controle, não armazenar
+      topics: this.state.topics,
+      hasChanges: true,
     });
   }
 
   handleSave(data) {
-    //alert(JSON.stringify(this.state, null, 2));
     this.client.subscribe('financeiro/duplicata/alterado/' + this.state._id, function(err, granted) {
       if (err) {
         console.log('Erro ao se inscrever no topico: ' + granted[0].topic)
       } else {
         this.setState(
-          {topics: assign(this.state.topics, {[granted[0].topic]: this.handleSaveOk})},
+          {
+            topics: assign(this.state.topics, {[granted[0].topic]: this.handleSaveOk.bind(this)})
+          },
           this.client.publish.bind(
             this.client, 
             'financeiro/duplicata/alterar/' + clientId, 
-            JSON.stringify(omit(this.state, 'topics'))
+            JSON.stringify(omit(this.state, ['topics', 'hasChanges', 'dialog']))
           )  
         );
       }
@@ -176,45 +194,74 @@ class App extends Component {
   }
 
   handleSaveOk(msg) {
-    alert('Salvo com sucesso: ' + msg);
+    let data = JSON.parse(msg); 
+    let newState = this.state;
+    delete newState.hasChanges;
+    this.setState(
+      newState, 
+      //alert('Dados gravados com sucesso !')
+    );
   }
 
   handleDelete(id) {
-
+    this.setState({dialog: <Excluir onClose={this.handleCloseDialog} />})
   }
 
   handlePrint(data) {
-
+    this.setState({dialog: <PDF file={'http://localhost/financeiro/duplicatas/bordero'} onClose={this.handleCloseDialog} />})
   }
 
   handleCalc(data) {
-
+    this.setState({dialog: <Calcular onClose={this.handleCloseDialog} />})
   }
 
   handleSearch(data) {
-
+    this.setState({dialog: <Buscar onClose={this.handleCloseDialog} />})
   }
 
   handleChange(value) {
     // value is an ISO String. 
-    this.setState({
-      [value.target.id]: value.target.value
-    });
+    if (this.state[value.target.id] != value.target.value) {
+      this.setState({
+        [value.target.id]: value.target.value,
+        persist: true
+      });
+    }
+  }
+
+  handleEmissaoChange(value) {
+    // value is an ISO String. 
+    if (this.state['Emissao'] != value) {
+      this.setState({
+        ['Emissao']: value,
+        persist: true
+      });
+    }
+  }
+
+  handleEntregaChange(value) {
+    // value is an ISO String. 
+    if (this.state['Entrega'] != value) {
+      this.setState({
+        ['Entrega']: value,
+        persist: true
+      });
+    }
   }
 
   render() {
     const canSave = true;
 
     return (
-      <Row>
+
+      <div>
+
+        <Row>
         
           <Col md={1} />
           <Col md={10} >
 
-            <h4>ClientId: {clientId}</h4>
-
             <Panel header={'Cadastro de Duplicadas'} bsStyle="primary" >
-
 
                 <Row style={{borderBottom: 'solid', borderBottomWidth: 1, borderBottomColor: '#337ab7', paddingBottom: 20}}>
                   <Col xs={6} md={2} >
@@ -262,7 +309,7 @@ class App extends Component {
 
                         <Button
                           bsSize="large"
-                          disabled={!this.state.id}
+                          disabled={this.state.hasChanges}
                           onClick={this.handlePrint}
                           style={{width: 100}}
                         >
@@ -319,7 +366,7 @@ class App extends Component {
                     >
                         <Button
                           bsSize="large"
-                          disabled={!this.state.id}
+                          disabled={this.state.hasChanges}
                           onClick={this.handleDelete}
                           style={{width: 100}}
                         >
@@ -347,7 +394,7 @@ class App extends Component {
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
                       {/*<FormControl.Feedback />*/}
-                      <DatePicker ref="emissao" value={this.state.emissao} onChange={this.handleChange} />
+                      <DatePicker ref="emissao" value={this.state.emissao} onChange={this.handleEmissaoChange} />
                     </FormGroup>
                   </Col>
                   <Col xs={12} md={2}>Entrega</Col>
@@ -356,7 +403,7 @@ class App extends Component {
                       {/*<ControlLabel>Input with success and feedback icon</ControlLabel>*/}
                       {/*<FormControl type="text" defaultValue="10/10/2016" />*/}
                       {/*<FormControl.Feedback />*/}
-                      <DatePicker ref="entrega" value={this.state.entrega} onChange={this.handleChange} />
+                      <DatePicker ref="entrega" value={this.state.entrega} onChange={this.handleEntregaChange} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -427,14 +474,28 @@ class App extends Component {
                   </Col>
                 </Row>
            
-
             </Panel>
 
           </Col>
           <Col md={1} />
 
         </Row>
-      
+
+        <Row>
+          <Col md={1} />
+          <Col md={11} ><h4>ClientId: {clientId}</h4></Col>
+          <Col md={1} />
+        </Row>
+        <Row>
+          <Col md={1} />
+          <Col md={11} ><h4>hasChages: {this.state.hasChanges === undefined ? 'null' : this.state.hasChanges.toString()}</h4></Col>
+          <Col md={1} />
+        </Row>
+
+        {this.state.dialog}
+
+      </div>
+
     );
   }
 }
